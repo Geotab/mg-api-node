@@ -1,0 +1,27 @@
+{
+  "name": "mg-api-node",
+  "version": "1.0.0",
+  "description": "Unofficial nodejs client for the MyGeotab API",
+  "main": "api.js",
+  "devDependencies": {
+    "chai": "^1.9.2",
+    "mocha": "^1.21.4",
+    "nock": "^2.12.0"
+  },
+  "scripts": {
+    "test": "mocha -R list"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Geotab/mg-api-node.git"
+  },
+  "keywords": [
+    "mygeotab",
+    "geotab",
+    "api",
+    "node",
+    "nodejs"
+  ],
+  "author": "Steve Hansen <beefo@hotmail.com>",
+  "license": "ISC"
+}
