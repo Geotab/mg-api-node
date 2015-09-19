@@ -5,7 +5,7 @@ Unofficial nodejs client for the MyGeotab API
 ### Getting Started ###
 
 ```
-$ git clone https://github.com/Geotab/mg-api-node.git mg-api-node
+$ npm install mg-api-node --save
 ```
 
 ### Usage ###
