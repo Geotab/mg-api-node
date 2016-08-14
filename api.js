@@ -139,12 +139,23 @@ module.exports = function (u, p, d, s, o) {
         }
         params.credentials = credentials;
         post(method, params, function (err, data) {
-            if(err && err.message && (err.message.toLowerCase().indexOf("invaliduserexception") > -1 || err.message.toLowerCase().indexOf("dbunavailablexception") > -1) && tryCount < 1){
+            var reauthenticate = false;
+
+            if (err && err.errors) {
+                // check if any errors require re-authentication
+                err.errors.forEach(function (error) {
+                    if (error.name.toLowerCase().indexOf("invaliduserexception") > -1 || error.name.toLowerCase().indexOf("dbunavailablexception") > -1) {
+                        reauthenticate = true;
+                    }
+                });
+            }
+
+            if (reauthenticate === true && tryCount < 1) {
                 tryCount++;
                 doAuthenticate(callback);
             } else {
                 tryCount = 0;
-                callback(err, data)
+                callback(err, data);
             }
         });
     };

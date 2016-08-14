@@ -21,6 +21,17 @@ var credentialsResult = {
   }
 };
 
+var invalidUserError = {
+  error: {
+    message: 'Incorrect MyGeotab login credentials @ \'g560\'',
+    name: 'JSONRPCError',
+    errors: [{
+      message: 'Incorrect MyGeotab login credentials @ \'g560\'',
+      name: 'InvalidUserException'
+    }]
+  }
+};
+
 describe('#authenticate', function() {
   var validateSuccess = function(err, data, server) {
     expect(err).to.be.a('null');
@@ -113,24 +124,14 @@ describe('#authenticate', function() {
   });
 
   it('authenticates with invalid credentials', function(done) {
-    var error = {
-      error: {
-        message: 'Incorrect MyGeotab login credentials @ \'g560\'',
-        name: 'JSONRPCError',
-        errors: [{
-          message: 'Incorrect MyGeotab login credentials @ \'g560\'',
-          name: 'InvalidUserException'
-        }]
-      }
-    };
 
-    nock('https://my.geotab.com').post('/apiv1').reply(200, error);
+    nock('https://my.geotab.com').post('/apiv1').reply(200, invalidUserError);
 
     api = new API('foo@bar.com', password, database);
 
     api.authenticate(function(err, data) {
       expect(err).to.be.a('object');
-      expect(err).to.deep.equal(error.error);
+      expect(err).to.deep.equal(invalidUserError.error);
       done();
     });
   });
@@ -205,7 +206,7 @@ describe('#call', function() {
 
     api.authenticate(function(err, data) {
       nock('https://my3.geotab.com').post('/apiv1').reply(200, error);
-        
+
       api.call('Get', {
         typeName: 'FooBar'
       }, function(err, data) {
@@ -226,6 +227,31 @@ describe('#call', function() {
 
     api.authenticate(function(err, data) {
       nock('https://my3.geotab.com').post('/apiv1').reply(200, user);
+
+      api.call('Get', {
+        typeName: 'User',
+        search: {
+          name: userName
+        }
+      }, function(err, data) {
+        expect(err).to.be.a('null');
+        expect(data).to.deep.equal(user.result);
+        done();
+      });
+    });
+  });
+
+  it('re-authenticates and retries on invaliduserexception', function(done) {
+    nock('https://my3.geotab.com').post('/apiv1').reply(200, credentialsResult);
+
+    api = new API(userName, password, database, server, {
+      compression: null
+    });
+
+    api.authenticate(function(err, data) {
+      nock('https://my3.geotab.com').post('/apiv1').reply(200, invalidUserError)
+                                    .post('/apiv1').reply(200, credentialsResult)
+                                    .post('/apiv1').reply(200, user);
 
       api.call('Get', {
         typeName: 'User',
