@@ -1,6 +1,6 @@
 {
   "name": "mg-api-node",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Unofficial nodejs client for the MyGeotab API",
   "main": "api.js",
   "devDependencies": {
