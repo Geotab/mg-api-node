@@ -4,14 +4,6 @@ const https = require('https');
 const http = require('http');
 const zlib = require('zlib');
 
-// return {
-//     authenticate: authenticate,
-//     call: call,
-//     multicall: multicall,
-//     credentials: credentials,
-//     server: rootServer
-// };
-
 module.exports = class MgApi {
 
     static make(userName, password, database, server, options) {
