@@ -49,11 +49,11 @@ describe('#authenticate', function() {
   };
 
   it('creates API without userName', function() {
-    expect(API).to.throw('Must supply userName');
+    expect(() => new API()).to.throw('Must supply userName');
   });
 
   it('creates API without password', function() {
-    expect(API.bind(API, userName)).to.throw('Must supply password');
+    expect(() => new API(userName)).to.throw('Must supply password');
   });
 
   it('authenticate without callback', function() {
