@@ -1,11 +1,10 @@
 var https = require('https');
 var http = require('http');
 var zlib = require('zlib');
-module.exports = function (u, p, sId, d, s, o) {
+module.exports = function (u, p, d, s, o, sId) {
   var credentials,
     userName = u,
     password = p,
-    sessionId = sId,
     database = d,
     rootServer = s || 'my.geotab.com',
     directServer = rootServer,
@@ -13,7 +12,8 @@ module.exports = function (u, p, sId, d, s, o) {
     options = {
       ssl: !o || o.ssl === undefined ? true : o.ssl,
       compression: o && o.hasOwnProperty('compression') ? o.compression : 'gzip'
-    };
+    },
+    sessionId = sId;
 
   if (!userName) {
     throw new Error('Must supply userName')
