@@ -19,8 +19,19 @@ module.exports = function (u, p, d, s, o, sId) {
         throw new Error('Must supply userName')
     }
 
-    if (!password && !sessionId) {
-        throw new Error('Must supply password or session id')
+    if (!!sessionId) {
+        if (!database || directServer === 'my.geotab.com') {
+            throw new Error('Must supply database and server')
+        }
+
+        credentials = {
+            userName,
+            sessionId,
+            database,
+            serverName: directServer
+        }
+    } else if (!password) {
+        throw new Error('Must supply password')
     }
 
     var post = function (method, params, callback) {
@@ -211,16 +222,11 @@ module.exports = function (u, p, d, s, o, sId) {
         });
     };
 
-    var setCredentials = function (credentialsObj) {
-        credentials = JSON.parse(JSON.stringify(credentialsObj));
-    }
-
     return {
         authenticate: authenticate,
         call: call,
         multicall: multicall,
         credentials: credentials,
-        server: rootServer,
-        setCredentials: setCredentials
+        server: rootServer
     }
 };
