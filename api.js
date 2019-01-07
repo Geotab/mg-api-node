@@ -1,7 +1,7 @@
 var https = require('https');
 var http = require('http');
 var zlib = require('zlib');
-module.exports = function (u, p, d, s, o) {
+module.exports = function (u, p, d, s, o, sId) {
     var credentials,
         userName = u,
         password = p,
@@ -11,13 +11,26 @@ module.exports = function (u, p, d, s, o) {
         tryCount = 0,
         options = {
             ssl: !o || o.ssl === undefined ? true : o.ssl,
-            compression: o && o.hasOwnProperty('compression')? o.compression : 'gzip'
-        };
+            compression: o && o.hasOwnProperty('compression') ? o.compression : 'gzip'
+        },
+        sessionId = sId;
 
-    if(!userName){
-       throw new Error('Must supply userName')
+    if (!userName) {
+        throw new Error('Must supply userName')
     }
-    if(!password){
+
+    if (!!sessionId) {
+        if (!database || directServer === 'my.geotab.com') {
+            throw new Error('Must supply database and server')
+        }
+
+        credentials = {
+            userName,
+            sessionId,
+            database,
+            serverName: directServer
+        }
+    } else if (!password) {
         throw new Error('Must supply password')
     }
 
@@ -28,7 +41,7 @@ module.exports = function (u, p, d, s, o) {
             if (err) {
                 callback(err, data);
             } else {
-                if(!data){
+                if (!data) {
                     callback("no data returned");
                     return;
                 }
@@ -44,7 +57,7 @@ module.exports = function (u, p, d, s, o) {
             var response;
             var chunks = [];
             var encoding = res.headers['content-encoding'];
-            if(res.statusCode !== 200) {
+            if (res.statusCode !== 200) {
                 done({
                     name: res.statusCode.toString(),
                     message: http.STATUS_CODES[res.statusCode]
@@ -104,8 +117,7 @@ module.exports = function (u, p, d, s, o) {
                 method: method || '',
                 params: params
             });
-        }
-        catch (e) {
+        } catch (e) {
             callback(e, null);
             return;
         }
@@ -115,7 +127,7 @@ module.exports = function (u, p, d, s, o) {
     var call = function (method, params, callback) {
         var doAuthenticate = function (callback) {
             authenticate(function (err, data) {
-                if(err){
+                if (err) {
                     callback(err, data);
                 } else {
                     call(method, params, callback);
@@ -123,20 +135,21 @@ module.exports = function (u, p, d, s, o) {
             });
         };
 
-        if(!method){
+        if (!method) {
             throw new Error('Must provide method');
         }
-        if(!params){
+        if (!params) {
             params = {};
         }
-        if(!callback){
+        if (!callback) {
             throw new Error('Must provide callback');
         }
 
-        if(!credentials){
+        if (!credentials) {
             doAuthenticate(callback);
             return;
         }
+
         params.credentials = credentials;
         post(method, params, function (err, data) {
             var reauthenticate = false;
@@ -163,10 +176,10 @@ module.exports = function (u, p, d, s, o) {
     var multicall = function (calls, callback) {
         var formattedCalls;
 
-        if(!calls){
+        if (!calls) {
             throw new Error('Must provide calls');
         }
-        if(!callback){
+        if (!callback) {
             throw new Error('Must provide callback');
         }
 
@@ -175,13 +188,15 @@ module.exports = function (u, p, d, s, o) {
                 method: call[0],
                 params: call[1]
             };
-            if(!json.params){
+            if (!json.params) {
                 json.params = {};
             }
             return json;
         });
 
-        call("ExecuteMultiCall", { calls: formattedCalls }, callback);
+        call("ExecuteMultiCall", {
+            calls: formattedCalls
+        }, callback);
     };
 
     var authenticate = function (callback) {
@@ -192,12 +207,12 @@ module.exports = function (u, p, d, s, o) {
             server: rootServer
         };
 
-        if(!callback){
+        if (!callback) {
             throw new Error('Must provide callback');
         }
 
         post('Authenticate', params, function (err, data) {
-            if(!err) {
+            if (!err) {
                 if (data.path && data.path !== 'ThisServer') {
                     directServer = data.path;
                 }
