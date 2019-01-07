@@ -38,6 +38,29 @@ api.authenticate(function(err, data) {
 });
 ```
 
+#### Session ID ####
+
+It's also possible to supply session ID and direct server to re-use a session ID. This avoids costly authentication.
+
+```
+var api = new API(userName, password, database, server, options, sessionId);
+
+api.call('Get', {
+  typeName: 'User',
+  resultsLimit: 1
+}, function(err, data) {
+
+  if(err){
+    console.log('Error', err);
+    return;
+  }
+
+  console.log('User', data);
+
+});
+
+```
+
 ### Running Tests ###
 ```
 $ npm install -g mocha
