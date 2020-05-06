@@ -5,8 +5,8 @@
   "main": "api.js",
   "devDependencies": {
     "chai": "^1.9.2",
-    "mocha": "^1.21.4",
-    "nock": "^2.12.0"
+    "mocha": "^7.1.2",
+    "nock": "^12.0.3"
   },
   "scripts": {
     "test": "mocha -R list"
