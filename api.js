@@ -178,7 +178,7 @@ module.exports = function (u, p, d, s, o, sId) {
         }, timeout, timeoutCallback);
     };
 
-    var multicall = function (calls, callback) {
+    var multicall = function (calls, callback, timeout = null, timeoutCallback = null) {
         var formattedCalls;
 
         if (!calls) {
@@ -201,7 +201,7 @@ module.exports = function (u, p, d, s, o, sId) {
 
         call("ExecuteMultiCall", {
             calls: formattedCalls
-        }, callback);
+        }, callback, timeout, timeoutCallback);
     };
 
     var authenticate = function (callback) {
