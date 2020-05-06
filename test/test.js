@@ -378,4 +378,20 @@ describe('#multicall', function () {
             done();
         });
     });
+
+    it('times out on multicall', function (done) {
+        var results = {
+            result: [{
+                name: userName
+            }, '5.7.22334.11']
+        };
+        nock('http://my3.geotab.com').post('/apiv1').delay(200).reply(200, results);
+        let timedOut = false;
+        api.multicall(calls, function (err, data) {
+            done();
+        }, 100, function() {
+            timedOut = true;
+        });
+        expect(timedOut, 'Multicall did not timeout');
+    });
 });
