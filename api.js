@@ -34,7 +34,7 @@ module.exports = function (u, p, d, s, o, sId) {
         throw new Error('Must supply password')
     }
 
-    var post = function (method, params, callback) {
+    var post = function (method, params, callback, timeout, timeoutCallback) {
         var paramsStr = getRpc(method, params);
         var option = getOptions(method, paramsStr);
         var done = function (err, data) {
@@ -84,6 +84,11 @@ module.exports = function (u, p, d, s, o, sId) {
                 done(e, null);
             });
         });
+
+        if (typeof timeout === 'number' && !options.ssl){
+            typeof timoutCallback === 'function' ? post_req.setTimeout(timeout, timeoutCallback) : post_req.setTimeout(timeout);
+        }
+
         post_req.on('error', function (err) {
             callback(err, null)
         });
@@ -124,7 +129,7 @@ module.exports = function (u, p, d, s, o, sId) {
         return 'JSON-RPC=' + encodeURIComponent(rpcString);
     };
 
-    var call = function (method, params, callback) {
+    var call = function (method, params, callback, timeout = null, timeoutCallback = null) {
         var doAuthenticate = function (callback) {
             authenticate(function (err, data) {
                 if (err) {
@@ -170,7 +175,7 @@ module.exports = function (u, p, d, s, o, sId) {
                 tryCount = 0;
                 callback(err, data);
             }
-        });
+        }, timeout, timeoutCallback);
     };
 
     var multicall = function (calls, callback) {
