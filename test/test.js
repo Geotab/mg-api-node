@@ -369,7 +369,7 @@ describe('#multicall', function () {
                 name: userName
             }, '5.7.22334.11']
         };
-
+        // http for convenience - api instance from above has ssl: false - gives 302 redirect as nock response with https
         nock('http://my3.geotab.com').post('/apiv1').reply(200, results);
 
         api.multicall(calls, function (err, data) {

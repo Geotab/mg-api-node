@@ -85,6 +85,7 @@ module.exports = function (u, p, d, s, o, sId) {
             });
         });
 
+        // If timeout was provided and requesting with http, we add a timeout to the request
         if (typeof timeout === 'number' && !options.ssl){
             typeof timoutCallback === 'function' ? post_req.setTimeout(timeout, timeoutCallback) : post_req.setTimeout(timeout);
         }
