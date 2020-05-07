@@ -43,7 +43,7 @@ api.authenticate(function(err, data) {
 If you need to handle potential slow HTTP requests, you can access [request.setTimeout](https://nodejs.org/api/http.html#http_request_settimeout_timeout_callback) by passing an optional timeout (ms) and timeoutCallback to `api.call()` and `api.multicall()`:
 
 ```javascript
-var api = new API(userName, password, database, server, options, sessionId);
+var api = new API(userName, password, database, server, {ssl: false}, sessionId);
 
 // Timeout (ms) and TimeoutCallback
 api.call('Get', {
