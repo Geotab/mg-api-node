@@ -1,3 +1,5 @@
+# This project has been deprecated. Please use [mg-api-js](https://github.com/Geotab/mg-api-js).
+
 # mg-api-node #
 
 Unofficial nodejs client for the MyGeotab API
