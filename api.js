@@ -19,7 +19,7 @@ module.exports = function (u, p, d, s, o, sId) {
         throw new Error('Must supply userName')
     }
 
-    if (!!sessionId) {
+    if (sessionId) {
         if (!database || directServer === 'my.geotab.com') {
             throw new Error('Must supply database and server')
         }
