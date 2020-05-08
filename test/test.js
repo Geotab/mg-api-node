@@ -307,6 +307,41 @@ describe('#call', function () {
             done();
         });
     });
+
+    it('makes a call with timeout length only', function (done) {
+        nock('https://my3.geotab.com').post('/apiv1').delay(200).reply(200, credentialsResult);
+        api = new API(userName, null, database, server, {ssl: false}, sessionId);
+        
+        let timedOut = true;
+        api.call('Get', {
+            typeName: 'User',
+            search: {
+                name: userName
+            }
+        }, function (err, data) {
+            timedOut = false;
+            done();
+        }, 100);
+        expect(timedOut, 'api ran callback when timeout had passed');
+    });
+
+    it('makes a call with full timeout options', function (done) {
+        nock('https://my3.geotab.com').post('/apiv1').delay(200).reply(200, credentialsResult);
+        
+        let timedOut = false;
+        api.call('Get', {
+            typeName: 'User',
+            search: {
+                name: userName
+            }
+        }, function (err, data) {
+            done();
+        }, 100, function(){
+            timedOut = true;
+            done();
+        });
+        expect(timedOut, 'api did not run timeoutCallback');
+    });
 });
 
 describe('#multicall', function () {
@@ -334,13 +369,29 @@ describe('#multicall', function () {
                 name: userName
             }, '5.7.22334.11']
         };
-
-        nock('https://my3.geotab.com').post('/apiv1').reply(200, results);
+        // http for convenience - api instance from above has ssl: false - gives 302 redirect as nock response with https
+        nock('http://my3.geotab.com').post('/apiv1').reply(200, results);
 
         api.multicall(calls, function (err, data) {
             expect(err).to.be.a('null');
             expect(data).to.deep.equal(results.result);
             done();
         });
+    });
+
+    it('times out on multicall', function (done) {
+        var results = {
+            result: [{
+                name: userName
+            }, '5.7.22334.11']
+        };
+        nock('http://my3.geotab.com').post('/apiv1').delay(200).reply(200, results);
+        let timedOut = false;
+        api.multicall(calls, function (err, data) {
+            done();
+        }, 100, function() {
+            timedOut = true;
+        });
+        expect(timedOut, 'Multicall did not timeout');
     });
 });
