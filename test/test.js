@@ -88,7 +88,7 @@ describe('#authenticate', function () {
     });
 
     it('authenticate against unknown server', function (done) {
-        api = new API(userName, password, database, 'my10000.geotab.com');
+        api = new API(userName, password, database, 'unknownserver.geotab.com');
         api.authenticate(function (err, data) {
             expect(err).to.be.a('object');
 
