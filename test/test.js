@@ -62,19 +62,19 @@ describe('#authenticate', function () {
     });
 
     it('creates API with session id but no database or server', function () {
-        expect(API.bind(API, userName, null, null, null, null, sessionId)).to.throw('Must supply database and server');
+        expect(API.bind(API, userName, null, null, null, null, sessionId)).to.throw('Must supply database');
     });
 
     it('creates API with session id and a database but no server', function () {
-        expect(API.bind(API, userName, null, database, null, null, sessionId)).to.throw('Must supply database and server');
+        expect(API.bind(API, userName, null, database, null, null, sessionId)).to.not.throw();
     });
 
     it('creates API with session id and a server but no database', function () {
-        expect(API.bind(API, userName, null, null, server, null, sessionId)).to.throw('Must supply database and server');
+        expect(API.bind(API, userName, null, null, server, null, sessionId)).to.throw('Must supply database');
     });
 
     it('creates API with session id and a database, but a server that equals "my.geotab.com"', function () {
-        expect(API.bind(API, userName, null, database, "my.geotab.com", null, sessionId)).to.throw('Must supply database and server');
+        expect(API.bind(API, userName, null, database, "my.geotab.com", null, sessionId)).to.not.throw();
     });
 
     it('creates API with session id, server, and database', function () {
